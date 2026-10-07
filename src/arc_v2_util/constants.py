@@ -3,6 +3,8 @@ from __future__ import annotations
 import builtins
 import inspect
 import os
+from os.path import expanduser, expandvars
+from pathlib import Path
 from typing import Any, Generic, TypeVar, cast
 
 from dotenv import load_dotenv
@@ -127,3 +129,14 @@ class Constant(Generic[T]):
 
     def __getattr__(self, name: str) -> Any:  # pyright: ignore[reportExplicitAny, reportAny]
         return getattr(self.value, name)  # pyright: ignore[reportAny]
+
+    def to_path(self, expand: bool = True) -> Path:
+        if not isinstance(self.value, str):
+            raise ConstantTypeError("Only type string can be converted to path!")
+
+        _path = cast(str, self.value)
+
+        if expand:
+            _path = expandvars(expanduser(_path))
+
+        return Path(_path)

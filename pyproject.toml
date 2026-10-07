@@ -1,16 +1,11 @@
 [project]
 name = "arc-v2-util"
-version = "0.1.0"
+version = "0.2.0"
 description = "Add your description here"
 readme = "README.md"
-authors = [
-    { name = "PauWol", email = "paul22wof@proton.me" }
-]
+authors = [{ name = "PauWol", email = "paul22wof@proton.me" }]
 requires-python = ">=3.11"
-dependencies = [
-    "dotenv>=0.9.9",
-    "typing-extensions>=4.16.0",
-]
+dependencies = ["dotenv>=0.9.9", "typing-extensions>=4.16.0"]
 
 [project.scripts]
 arc-v2-util = "arc_v2_util:main"
@@ -20,7 +15,4 @@ requires = ["uv_build>=0.12.10,<0.13.0"]
 build-backend = "uv_build"
 
 [dependency-groups]
-dev = [
-    "pytest>=9.1.1",
-    "pytest-asyncio>=1.4.0",
-]
+dev = ["pytest>=9.1.1", "pytest-asyncio>=1.4.0"]

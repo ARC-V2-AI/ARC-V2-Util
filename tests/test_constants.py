@@ -1,8 +1,10 @@
 import os
+from pathlib import Path
 
 import pytest
 
-from arc_v2_util.constants import Constant, ConstantTypeError
+from arc_v2_util.constants import Constant
+from arc_v2_util.errors import ConstantTypeError
 
 
 def test_defaults_and_inferred_types() -> None:
@@ -73,3 +75,18 @@ def test_explicit_type_mismatch() -> None:
 
     with pytest.raises(ConstantTypeError):
         FLOAT_INT_FAIL = Constant(default=2.5, type=int)
+
+
+def test_to_path() -> None:
+    os.environ["PATH_ENV_TEST"] = "~/arc/$TEST_DIR"
+    os.environ["TEST_DIR"] = "memory"
+
+    try:
+        PATH_ENV_TEST = Constant(default="~/arc/$TEST_DIR")
+
+        path = PATH_ENV_TEST.to_path()
+
+        assert path == Path.home() / "arc" / "memory"
+    finally:
+        del os.environ["PATH_ENV_TEST"]
+        del os.environ["TEST_DIR"]
