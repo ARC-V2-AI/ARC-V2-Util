@@ -133,7 +133,7 @@ After all attempts fail, `RetryError` is raised with the collected errors.
 ARC-V2-Util defines a small hierarchy for utility-specific errors:
 
 ```text
-ARCUtilError^
+ARCUtilError
 └── RetryError
 ```
 
