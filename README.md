@@ -44,42 +44,41 @@ The goal is to provide small, reusable building blocks for common concerns witho
 
 `Constant` provides a small configuration abstraction that combines:
 
-* a default value
-* automatic type inference
-* optional explicit type declaration
+* a default value and automatic type inference
+* optional explicit type declaration and validation
 * environment-variable overrides
-* type validation
-* convenient access to the resolved value
+* automatic conversion when explicitly enabled
+* access to the resolved value and constant metadata
 
-The constant derives its name from the assignment and resolves its value from the corresponding environment variable when available.
+The constant derives its name from the assignment and resolves its value from the corresponding environment variable when available. It uses `wrapt` to forward common operations to the resolved value, allowing constants to be used directly in most expressions.
 
 ```python
 from arc_v2_util.constants import Constant
 
 PORT = Constant(default=7842)
-
 DEBUG = Constant(default=False)
-
 NAME = Constant(default="ARC")
+
+server.start(PORT + 1)
+if DEBUG:
+    print(NAME.upper())
 ```
 
-The resolved value can be accessed through `.value`:
+Use `.value` when you need to explicitly access the resolved native value. The constant also retains `.name`, `.default`, `.type`, and helper methods such as `.to_path()`.
 
-```python
-PORT.value
-DEBUG.value
-NAME.value
-```
-
-`Constant` also supports normal Python-style conversion and comparisons through its implemented methods.
-
-#### Explicit types
+#### Explicit types and conversion
 
 ```python
 PORT = Constant(default=7842, type=int)
 ```
 
-An explicitly declared type must match the default value, otherwise `ConstantTypeError` is raised.
+An explicitly declared type must match the default value unless automatic conversion is enabled. With `auto_conversion=True`, an explicit target type is required:
+
+```python
+PORT = Constant(default="7842", type=int, auto_conversion=True)
+```
+
+A value that cannot be converted raises `ConstantTypeError`.
 
 #### Environment overrides
 
@@ -95,11 +94,14 @@ the environment can override the default:
 export PORT=9000
 ```
 
-The resulting value becomes:
+The resolved value is available directly in common operations, or explicitly through `.value`:
 
 ```python
-PORT.value  # 9000
+server.start(PORT)
+print(PORT.value)  # 9000
 ```
+
+`Constant` is a proxy, not an exact native object: `type(PORT) is int` is false. Use `.value` when an API requires the exact native type.
 
 ### `retry`
 
